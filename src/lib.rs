@@ -54,7 +54,7 @@ mod binding {
 /// You might notice the generated patch data is larger than both orginal data and the updated data.
 /// But don't worry, if your data is large enough and kind of similar between each other (usually the case
 /// for software updates or ROM patches), the patch data should be only a fraction of your updated file.
-pub fn encode(input: &[u8], src: &[u8]) -> Option<Vec<u8>> {
+pub fn encode(input: &[u8], src: &[u8], flags: i32) -> Option<Vec<u8>> {
     unsafe {
         let input_len = input.len() as c_uint;
         let src_len = src.len() as c_uint;
@@ -69,7 +69,7 @@ pub fn encode(input: &[u8], src: &[u8]) -> Option<Vec<u8>> {
             output.as_mut_ptr(),
             &mut avail_output,
             estimated_out_len,
-            0,
+            flags,
         );
         if result == 0 {
             output.set_len(avail_output as usize);
