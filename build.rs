@@ -15,14 +15,25 @@ fn add_def(v: &mut Vec<(String, String)>, key: &str, val: &str) {
 
 fn main() {
     let mut defines = Vec::new();
-    for i in &[
-        "size_t",
-        "unsigned int",
-        "unsigned long",
-        "unsigned long long",
-    ] {
-        let def_name = format!("SIZEOF_{}", i.to_uppercase().replace(" ", "_"));
-        defines.push((def_name, check_native_size(i)));
+    println!("cargo:rerun-if-env-changed=VOYAGER_CROSS_HACK");
+    if env::var_os("VOYAGER_CROSS_HACK").is_some() {
+        for i in &[
+            "size_t",
+            "unsigned long long",
+        ] {
+            let def_name = format!("SIZEOF_{}", i.to_uppercase().replace(" ", "_"));
+            defines.push((def_name, "8".to_string()));
+        }
+    } else {
+        for i in &[
+            "size_t",
+            "unsigned int",
+            "unsigned long",
+            "unsigned long long",
+        ] {
+            let def_name = format!("SIZEOF_{}", i.to_uppercase().replace(" ", "_"));
+            defines.push((def_name, check_native_size(i)));
+        }
     }
     add_def(&mut defines, "SECONDARY_DJW", "1");
     add_def(&mut defines, "SECONDARY_FGK", "1");
